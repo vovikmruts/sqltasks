@@ -23,18 +23,42 @@ WHERE one.RAM = two.RAM AND one.hd = two.hd
 ORDER BY one.model DESC, two.model ASC;
 
 ---[5]------------------
-SELECT DISTINCT one.country FROM classes AS one
+/*Лише країна*/
+SELECT one.country FROM classes AS one
 WHERE one.type = 'bb'
 INTERSECT
-SELECT DISTINCT country FROM classes /*Pogane zavdannya*/
-WHERE type = 'bc';
-
-SELECT country, class,type FROM classes
-WHERE type = 'bb'
-UNION
-SELECT country, class,type FROM classes /*Pogane zavdannya*/
+SELECT two.country FROM classes AS two
 WHERE type = 'bc'
-ORDER BY country;
+ORDER BY country
+
+/*Країна і клас, адекватно працює, лише тоді, коли в країни тільки по одному bb i bc*/
+SELECT DISTINCT t1.country, t1.class, t2.class 
+FROM Classes t1
+INNER JOIN Classes t2 ON t1.country = t2.country 
+WHERE t1.type='bb'
+AND t2.type='bc'
+
+/*Просто хотів заморочитись і зробити, як в неправильно сформованому завданні :)
+Збирає всі класи з типами bb i bc і записує ії в одне поле через кому*/
+SELECT DISTINCT c.country,
+substring(
+        (select cl1.class + ',' AS 'data()' from classes AS cl1
+		WHERE cl1.type = 'bb' AND cl1.country = c.country
+		for xml path('')), 1, 255) AS bb,
+substring(
+        (select cl2.class + ',' AS 'data()' from classes AS cl2
+		WHERE cl2.type = 'bc' AND cl2.country = c.country
+		for xml path('')), 1, 255) AS bc
+FROM classes AS c
+WHERE (substring(
+        (select cl2.class + ',' AS 'data()' from classes AS cl2
+		WHERE cl2.type = 'bc' AND cl2.country = c.country
+		for xml path('')), 1, 255)) IS NOT NULL
+AND
+(substring(
+        (select cl1.class + ',' AS 'data()' from classes AS cl1
+		WHERE cl1.type = 'bb' AND cl1.country = c.country
+		for xml path('')), 1, 255)) IS NOT NULL
 
 ---[6]------------------
 SELECT pc.model, p.maker FROM pc
