@@ -19,7 +19,7 @@ WHERE laptop.speed <= '500';
 ---[4]------------------
 SELECT DISTINCT one.model, two.model, one.hd, one.ram FROM laptop AS one
 CROSS JOIN laptop AS two
-WHERE one.RAM = two.RAM AND one.hd = two.hd
+WHERE one.RAM = two.RAM AND one.hd = two.hd AND one.code != two.code
 ORDER BY one.model DESC, two.model ASC;
 
 ---[5]------------------
