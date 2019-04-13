@@ -22,13 +22,29 @@ ORDER BY battle;
 
 ---[3]------------------
 ;WITH reg_CTE AS (
-SELECT region_id, id, name FROM [Geography]
+SELECT region_id, id, name, 1 AS PlaceLevel FROM [Geography]
 WHERE region_id = '1'
 )
 SELECT * from reg_CTE;
 
 ---[4]------------------
-SELECT * FROM geography
+;WITH reg_CTE AS (
+SELECT region_id, id AS Place_ID, name, 0 AS PlaceLevel FROM [Geography]
+WHERE id = 4
+UNION ALL 
+SELECT scnd.region_id, scnd.id, scnd.name, PlaceLevel + 1 FROM reg_CTE AS frst
+INNER JOIN [geography] AS scnd ON frst.Place_ID = scnd.region_id 
+)
+SELECT * from reg_CTE; /*Виводить першим записом регіон, по якому складається дерево*/
+
+;WITH reg_CTE AS (
+SELECT region_id, id AS Place_ID, name, 0 AS PlaceLevel FROM [Geography]
+WHERE region_id = 4
+UNION ALL 
+SELECT scnd.region_id, scnd.id, scnd.name, PlaceLevel + 1 FROM reg_CTE AS frst
+INNER JOIN [geography] AS scnd ON frst.Place_ID = scnd.region_id 
+)
+SELECT * from reg_CTE; /*Не виводить першим записом регіон, по якому складається дерево*/
 ---[5]------------------
 ;WITH nat_ETC AS(
 SELECT 1 AS frst
