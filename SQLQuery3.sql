@@ -171,15 +171,15 @@ HAVING COUNT(*) >= 2;
 ---[24]------------------
 /*Для оптимізації можна створити функцію для отримання к-сть моделей виробників з таблиці. В якості аргументу надавати назву таблиці*/
 SELECT DISTINCT PPP.maker,
-(SELECT COUNT(p.model) FROM pc
+(SELECT COUNT(pc.code) FROM pc
 INNER JOIN product AS p ON p.model = pc.model
 WHERE p.maker = PPP.maker) AS PC,
 
-(SELECT COUNT(p.model) FROM laptop AS l
+(SELECT COUNT(l.code) FROM laptop AS l
 INNER JOIN product AS p ON p.model = l.model
 WHERE p.maker = PPP.maker) AS Laptop,
 
-(SELECT COUNT(p.model) FROM printer AS pr
+(SELECT COUNT(pr.code) FROM printer AS pr
 INNER JOIN product AS p ON p.model = pr.model
 WHERE p.maker = PPP.maker) AS Printer
 FROM product AS PPP;
@@ -244,7 +244,7 @@ SELECT p.maker, p.model, p.type,
 UNION 
 SELECT price FROM pc WHERE model = p.model
 UNION
-SELECT price FROM pc WHERE model = p.model) AS PRICE  
+SELECT price FROM printer WHERE model = p.model) AS Price
 FROM product AS p
 WHERE p.maker = 'B';
 
